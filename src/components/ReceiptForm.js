@@ -1,7 +1,7 @@
 // src/components/ReceiptForm.js
 import React, { useState, useEffect } from 'react';
 import { fetchListData, submitFormData, uploadImage } from '../services/sheetdb';
-import './ReceiptForm.css'; // (Create this simple css file)
+import './ReceiptForm.css'; // assuming you create a css file
 
 const ReceiptForm = () => {
   const [formData, setFormData] = useState({
@@ -15,8 +15,8 @@ const ReceiptForm = () => {
     vendor: '',
     location: '',
     workItem: '',
-    imageFile: null,
-    imageUrl: ''
+    imageUrl: '',
+    imageFile: null
   });
 
   const [projects, setProjects] = useState([]);
@@ -24,141 +24,134 @@ const ReceiptForm = () => {
   const [vendors, setVendors] = useState([]);
   const [locations, setLocations] = useState([]);
   const [workItems, setWorkItems] = useState([]);
-  const [imagePreview, setImagePreview] = useState('');
 
   useEffect(() => {
-    async function loadDropdowns() {
-      try {
-        const projects = await fetchListData('Project Lists');
-        const categories = await fetchListData('Categories');
-        const vendors = await fetchListData('Vendors');
-        const locations = await fetchListData('Locations');
-        const workItems = await fetchListData('Work Items');
-
-        setProjects(projects.map(item => item.Name || item.name));
-        setCategories(categories.map(item => item.Name || item.name));
-        setVendors(vendors.map(item => item.Name || item.name));
-        setLocations(locations.map(item => item.Name || item.name));
-        setWorkItems(workItems.map(item => item.Name || item.name));
-      } catch (error) {
-        console.error('Failed to load dropdowns:', error);
-      }
-    }
-
     loadDropdowns();
   }, []);
+
+  const loadDropdowns = async () => {
+    try {
+      const projectData = await fetchListData('Project Lists');
+      const categoryData = await fetchListData('Categories');
+      const vendorData = await fetchListData('Vendors');
+      const locationData = await fetchListData('Locations');
+      const workItemData = await fetchListData('Work Items');
+
+      setProjects(projectData.map(item => item.Project));
+      setCategories(categoryData.map(item => item.Category));
+      setVendors(vendorData.map(item => item.Vendor));
+      setLocations(locationData.map(item => item.Location));
+      setWorkItems(workItemData.map(item => item['Work Item']));
+    } catch (error) {
+      console.error('Error loading dropdowns', error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === 'imageFile') {
-      const file = files[0];
-      setFormData(prev => ({ ...prev, imageFile: file }));
-
-      const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result);
-      if (file) reader.readAsDataURL(file);
+      setFormData({ ...formData, imageFile: files[0] });
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData({ ...formData, [name]: value });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       let imageUrl = formData.imageUrl;
 
       if (formData.imageFile) {
-        const base64 = await toBase64(formData.imageFile);
-        imageUrl = await uploadImage(base64, formData.imageFile.name);
-      }
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+          const base64 = reader.result.split(',')[1];
+          imageUrl = await uploadImage(base64, formData.imageFile.name);
 
-      const finalData = { ...formData, imageUrl };
-      await submitFormData(finalData);
-      alert('Receipt submitted!');
-      setFormData({
-        date: '',
-        project: '',
-        description: '',
-        category: '',
-        receiptNumber: '',
-        volume: '',
-        unitPrice: '',
-        vendor: '',
-        location: '',
-        workItem: '',
-        imageFile: null,
-        imageUrl: ''
-      });
-      setImagePreview('');
+          await submitFormData({ ...formData, imageUrl });
+          alert('Receipt submitted successfully!');
+          setFormData({
+            date: '',
+            project: '',
+            description: '',
+            category: '',
+            receiptNumber: '',
+            volume: '',
+            unitPrice: '',
+            vendor: '',
+            location: '',
+            workItem: '',
+            imageUrl: '',
+            imageFile: null
+          });
+        };
+        reader.readAsDataURL(formData.imageFile);
+      } else {
+        await submitFormData({ ...formData, imageUrl });
+        alert('Receipt submitted successfully!');
+        setFormData({
+          date: '',
+          project: '',
+          description: '',
+          category: '',
+          receiptNumber: '',
+          volume: '',
+          unitPrice: '',
+          vendor: '',
+          location: '',
+          workItem: '',
+          imageUrl: '',
+          imageFile: null
+        });
+      }
     } catch (error) {
-      console.error(error);
-      alert('Submission failed!');
+      console.error('Error submitting form', error);
+      alert('Failed to submit receipt.');
     }
   };
 
-  const toBase64 = (file) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = error => reject(error);
-  });
-
   return (
     <form className="receipt-form" onSubmit={handleSubmit}>
-      <h2>📋 Receipt Tracker</h2>
+      <h2>📄 Receipt Tracker</h2>
 
-      <label>Date</label>
       <input type="date" name="date" value={formData.date} onChange={handleChange} required />
-
-      <label>Project Name</label>
-      <input list="project-options" name="project" value={formData.project} onChange={handleChange} required />
-      <datalist id="project-options">
-        {projects.map((p, i) => <option key={i} value={p} />)}
+      
+      <input list="project-list" name="project" value={formData.project} onChange={handleChange} placeholder="Project Name" required />
+      <datalist id="project-list">
+        {projects.map((proj, idx) => <option key={idx} value={proj} />)}
       </datalist>
 
-      <label>Description</label>
-      <input type="text" name="description" value={formData.description} onChange={handleChange} required />
+      <input type="text" name="description" value={formData.description} onChange={handleChange} placeholder="Description" required />
 
-      <label>Category</label>
-      <input list="category-options" name="category" value={formData.category} onChange={handleChange} />
-      <datalist id="category-options">
-        {categories.map((c, i) => <option key={i} value={c} />)}
+      <input list="category-list" name="category" value={formData.category} onChange={handleChange} placeholder="Category" required />
+      <datalist id="category-list">
+        {categories.map((cat, idx) => <option key={idx} value={cat} />)}
       </datalist>
 
-      <label>Receipt Number</label>
-      <input type="text" name="receiptNumber" value={formData.receiptNumber} onChange={handleChange} />
+      <input type="text" name="receiptNumber" value={formData.receiptNumber} onChange={handleChange} placeholder="Receipt Number" />
 
-      <label>Volume</label>
-      <input type="number" name="volume" value={formData.volume} onChange={handleChange} />
+      <input type="number" name="volume" value={formData.volume} onChange={handleChange} placeholder="Volume" />
 
-      <label>Unit Price</label>
-      <input type="number" name="unitPrice" value={formData.unitPrice} onChange={handleChange} />
+      <input type="number" name="unitPrice" value={formData.unitPrice} onChange={handleChange} placeholder="Unit Price" />
 
-      <label>Vendor/Supplier</label>
-      <input list="vendor-options" name="vendor" value={formData.vendor} onChange={handleChange} />
-      <datalist id="vendor-options">
-        {vendors.map((v, i) => <option key={i} value={v} />)}
+      <input list="vendor-list" name="vendor" value={formData.vendor} onChange={handleChange} placeholder="Vendor/Supplier" />
+      <datalist id="vendor-list">
+        {vendors.map((vendor, idx) => <option key={idx} value={vendor} />)}
       </datalist>
 
-      <label>Location</label>
-      <input list="location-options" name="location" value={formData.location} onChange={handleChange} />
-      <datalist id="location-options">
-        {locations.map((l, i) => <option key={i} value={l} />)}
+      <input list="location-list" name="location" value={formData.location} onChange={handleChange} placeholder="Location" />
+      <datalist id="location-list">
+        {locations.map((loc, idx) => <option key={idx} value={loc} />)}
       </datalist>
 
-      <label>Work Item</label>
-      <input list="workitem-options" name="workItem" value={formData.workItem} onChange={handleChange} />
-      <datalist id="workitem-options">
-        {workItems.map((w, i) => <option key={i} value={w} />)}
+      <input list="workitem-list" name="workItem" value={formData.workItem} onChange={handleChange} placeholder="Work Item" />
+      <datalist id="workitem-list">
+        {workItems.map((work, idx) => <option key={idx} value={work} />)}
       </datalist>
 
-      <label>Upload Receipt Image</label>
-      <input type="file" name="imageFile" accept="image/*" capture="environment" onChange={handleChange} />
+      <input type="file" name="imageFile" accept="image/*" onChange={handleChange} />
+      <input type="url" name="imageUrl" value={formData.imageUrl} onChange={handleChange} placeholder="Or paste existing Image URL" />
 
-      {imagePreview && <img src={imagePreview} alt="Preview" className="image-preview" />}
-
-      <button type="submit">Submit</button>
+      <button type="submit">Submit Receipt</button>
     </form>
   );
 };
