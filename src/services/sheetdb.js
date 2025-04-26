@@ -2,19 +2,19 @@
 
 export const SHEETDB_API = 'https://sheetdb.io/api/v1/dd0cjhb34h7x0';
 
-// ✅ Fetch dropdown data
+// Fetch list data for dropdowns
 export const fetchListData = async (sheetName) => {
   const response = await fetch(`${SHEETDB_API}/search?sheet=${sheetName}`);
   const result = await response.json();
   
   if (!Array.isArray(result)) {
-    return []; // Always return an array even if result is empty
+    return [];
   }
   
   return result;
 };
 
-// ✅ Submit form data
+// Submit form data
 export const submitFormData = async (formData) => {
   const payload = {
     data: [{
@@ -42,7 +42,7 @@ export const submitFormData = async (formData) => {
   return response.json();
 };
 
-// ✅ Upload base64 image to Google Drive
+// Upload image
 export const uploadImage = async (base64Data, filename) => {
   const response = await fetch('YOUR_APPS_SCRIPT_WEBAPP_URL', {
     method: 'POST',
@@ -57,4 +57,3 @@ export const uploadImage = async (base64Data, filename) => {
   if (!result || !result.url) throw new Error('Image upload failed');
   return result.url;
 };
-
