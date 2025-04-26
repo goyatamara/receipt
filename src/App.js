@@ -1,3 +1,4 @@
+// src/App.js
 import React from 'react';
 import ReceiptForm from './components/ReceiptForm';
 import './App.css';
@@ -11,4 +12,3 @@ function App() {
 }
 
 export default App;
-
