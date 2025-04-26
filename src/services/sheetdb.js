@@ -44,7 +44,7 @@ export const submitFormData = async (formData) => {
 
 // Upload image
 export const uploadImage = async (base64Data, filename) => {
-  const response = await fetch('YOUR_APPS_SCRIPT_WEBAPP_URL', {
+  const response = await fetch('https://script.google.com/macros/s/AKfycbwiTSXkAc5NWWQUUEYLxE1EL2Rzg8bnXEYNET23jcnBLhgqvbnIXJMejYXyTHm9noOJeA/exec', {
     method: 'POST',
     body: JSON.stringify({
       image: base64Data,
