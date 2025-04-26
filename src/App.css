@@ -1,3 +1,55 @@
+.App {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+.receipt-form {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+}
+
+.receipt-form h2 {
+  margin-bottom: 20px;
+}
+
+.receipt-form label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: bold;
+}
+
+.receipt-form input, .receipt-form button {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.receipt-form button {
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+.receipt-form button:hover {
+  background-color: #45a049;
+}
+
+.image-preview {
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 6px;
+}
 /* src/App.css */
 
 .App {
