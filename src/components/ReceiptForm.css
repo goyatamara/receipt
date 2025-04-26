@@ -1,0 +1,38 @@
+/* src/components/ReceiptForm.css */
+
+.receipt-form {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .receipt-form h2 {
+    margin-bottom: 1.5rem;
+  }
+  
+  .receipt-form form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .receipt-form input, .receipt-form button {
+    margin-bottom: 1rem;
+    padding: 0.7rem;
+    font-size: 1rem;
+  }
+  
+  .receipt-form button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+  
+  .receipt-form button:hover {
+    background-color: #0056b3;
+  }
+  

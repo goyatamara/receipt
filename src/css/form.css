@@ -1,0 +1,58 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background: #f5f5f5;
+    margin: 0;
+  }
+  
+  .app-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 2rem;
+  }
+  
+  header {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  header img {
+    width: 40px;
+  }
+  
+  header h1 {
+    font-size: 1.5rem;
+    color: #228B22;
+  }
+  
+  .receipt-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .receipt-form label {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+  
+  .receipt-form input,
+  .receipt-form textarea,
+  .receipt-form select {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .receipt-form button {
+    padding: 0.75rem;
+    background: #228B22;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
